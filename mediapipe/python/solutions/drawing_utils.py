@@ -37,6 +37,8 @@ VISIBILITY_THRESHOLD = 0.5
 class DrawingSpec:
   # Color for drawing the annotation. Default to the green color.
   color: Tuple[int, int, int] = (0, 255, 0)
+  # Custom per-landmark colors. Overrides the `color` attribute above.
+  colors_landmarks: Tuple[Tuple[int, int, int], ...] = None
   # Thickness for drawing the annotation. Default to 2 pixels.
   thickness: int = 2
   # Circle radius. Default to 2 pixels.
@@ -168,9 +170,13 @@ def draw_landmarks(
                  connection_drawing_spec.thickness)
   # Draws landmark points after finishing the connection lines, which is
   # aesthetically better.
-  for landmark_px in idx_to_coordinates.values():
+  for i, landmark_px in enumerate(idx_to_coordinates.values()):
+    if landmark_drawing_spec.colors_landmarks is not None:
+      color = landmark_drawing_spec.colors_landmarks[i]
+    else:
+      color = landmark_drawing_spec.color
     cv2.circle(image, landmark_px, landmark_drawing_spec.circle_radius,
-               landmark_drawing_spec.color, landmark_drawing_spec.thickness)
+               color, landmark_drawing_spec.thickness)
 
 
 def draw_axis(
